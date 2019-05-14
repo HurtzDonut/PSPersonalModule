@@ -1,3 +1,29 @@
+<#
+    .SYNOPSIS
+        Uses CIM to find/stop a remote process.
+    .DESCRIPTION
+        Uses CIM to find a remote process, then calls the CIM Method, Terminate, to stop the process.
+    .EXAMPLE
+        PS C:\> Stop-RemoteProcess -ComputerName Computer1 -ProcessName Notepad
+        
+        ComputerName : Computer1
+        ProcessName  : notepad.exe
+        ProcessId    : 11228
+        ExitCode     : 0
+        Termination  : SUCCESS
+
+        Locates any process on 'Computer1' that matches 'Notepad', then terminates it.
+    .INPUTS
+        System.String
+    .OUTPUTS
+        System.Management.Automation.PSCustomObject
+        System.String
+    .NOTES
+        Created:    2/8/2019
+        Author:     Jacob C Allen (JCA)
+        Modified:   5/14/2019
+        Version:    1.2
+#>
 Function Stop-RemoteProcess {
     [CmdLetBinding()]
     Param (
