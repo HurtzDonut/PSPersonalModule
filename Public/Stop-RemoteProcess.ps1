@@ -11,16 +11,15 @@ Function Stop-RemoteProcess {
     $Result = [System.Collections.ArrayList]::New()
 
     # Use Cim to filter through the list of Processes from $ComputerName and find $ProcessName
-    $ProcessList = Get-WmiObject -Class Win32_Process -ComputerName $ComputerName | Where-Object {$PSItem.Name -match $ProcessName}
-    $ProcessList = Get-CimInstance -Class Win32_Process | Where-Object Name -match $ProcessName
+    $ProcessList = Get-CimInstance -ClassName Win32_Process -ComputerName $ComputerName | Where-Object Name -match $ProcessName
     
-    If ($ProcessList.Count -gt 0) {
+    If ($ProcessList.Name.Count -gt 0) {
         ForEach ($Process in $ProcessList) {
             $ExitCode = Invoke-CimMethod -InputObject $Process -MethodName Terminate -ComputerName $ComputerName
             
             [Void]$Result.Add((
                 [PSCustomObject][Ordered]@{
-                    ComputerName= $ComputerName
+                    ComputerName= $Process.PSComputerName
                     ProcessName = $Process.Name
                     ProcessId   = $Process.Handle
                     ExitCode    = $ExitCode.ReturnValue
