@@ -7,7 +7,7 @@ $PrivateFiles   = Get-ChildItem -Path $PrivatePath -Include *.ps1 -Recurse
 
 ForEach ($File in ($PublicFiles + $PrivateFiles)) {
     Try {
-        Import-Module -Path $File.FullName -ErrorAction Stop
+        Import-Module -Name $File.FullName -ErrorAction Stop
     } Catch {
         Write-Warning ('Failed to load : {0}' -F $File.BaseName)
     }
