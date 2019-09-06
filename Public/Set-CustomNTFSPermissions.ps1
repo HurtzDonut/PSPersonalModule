@@ -41,7 +41,7 @@
 .EXAMPLE
     PS C:\> Set CustomNTFSPermissions -Folder 'C:\Test' -Owner 'domain\User2' -Inheritance r -Grant 'domain\DocAdmins','Backup Operators' -Access F
 .NOTES
-    AUTHOR:     /u/_Cabbage_Corp_
+    AUTHOR:     Jacob Allen
     CREATED:    April 16, 2018
 #>
 Function Set-CustomNTFSPermissions{ 

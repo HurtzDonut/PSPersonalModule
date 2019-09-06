@@ -44,7 +44,7 @@
 
         FINISH                         !!! GREAT JOB !!!
     .NOTES
-        Created By  : /u/_Cabbage_Corp_
+        Created By  : Jacob Allen
         Created On  : 11/5/2018
         Inspiration : https://www.reddit.com/r/mildlyinteresting/comments/a35edg/local_gym_challenges_members_to_spell_their_names/
         Reasoning   : ¯\_(ツ)_/¯

@@ -4,7 +4,7 @@
 .DESCRIPTION
     The function would provide IIS application pool status
 .EXAMPLE
-   Get-AppPool -Server server1,server2 -Pool powershell
+   PS C:\> Get-AppPool -Server server1,server2 -Pool powershell
 #>
 
 Function Get-AppPool {
@@ -33,6 +33,4 @@ Function Get-AppPool {
             }
         }
     }
-
-    End { }
 } # Function Get-AppPool

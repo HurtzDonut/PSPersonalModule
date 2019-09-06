@@ -87,7 +87,7 @@
     .OUTPUTS
         System.Management.Automation.PSCustomObject
     .NOTES
-        Author:     Jacob C Allen (HurtzDonut01)
+        Author:     Jacob C Allen
         Created:    06/29/2018
         Modified:   01/03/2019
         Version:    1.2.0

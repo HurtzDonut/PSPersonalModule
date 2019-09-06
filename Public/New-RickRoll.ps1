@@ -39,7 +39,7 @@
     .LINK
         https://old.reddit.com/r/PowerShell/comments/8mz7d2/iex_newobject/?ref=share&ref_source=link
     .NOTES
-        Created By: /u/_Cabbage_Corp_
+        Created By: Jacob Allen
         Created On: 5/31/2018
         Modified:   10/31/2018
 #>

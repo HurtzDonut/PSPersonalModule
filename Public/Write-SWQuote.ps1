@@ -1,8 +1,7 @@
 <#
-    .SYNOPSIS
+.SYNOPSIS
     This is a simple script designed to simply pull a random quote using Invoke-WebRequest, and display it in the Console
 #>
-
 Function Write-SWQuote {
     [CmdLetBinding()]
     Param ( )
