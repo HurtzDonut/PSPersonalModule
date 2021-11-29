@@ -23,7 +23,7 @@ Function Find-EmptyADGroups {
     )
 
     Begin {
-        $Results = [ArrayList]::New()
+        $Results = [System.Collections.ArrayList]::New()
 
         $SearchCmd = Switch ($PSCmdlet.ParameterSetName) {
             'Specific' {
