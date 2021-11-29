@@ -2,65 +2,80 @@
 .SYNOPSIS
     Retrieves the uptime of a computer/collection of computers.
 .DESCRIPTION
-    Retreive the uptime of the specified computer(s) using the Win32_OperatingSystem WMI Class.
+    Retreive the uptime of the specified computer(s) using the Win32_OperatingSystem Class.
 .EXAMPLE
-    PS C:\> Get-Uptime -ComputerName Computer1,Computer2,Computer3
+    PS C:\> Get-FFBUptime DNSHostName LX085MWJ,WR2QQUSB19,SR1MGT01
+
+    ComputerName            LastBootTime       UpTime
+    ------------            ------------       ------
+    LX085MWJ.hq.first.int   11/8/2021 4:40 PM  0d:18h:23m:10s
+    WR2QQUSB19.hq.first.int 10/30/2021 5:48 PM 9d:17h:15m:27s
+    SR1MGT01.hq.first.int   11/6/2021 9:35 PM  2d:13h:28m:10s
 .EXAMPLE
-    Another example of how to use this cmdlet
+    PS C:\> 'LX085MWJ','WR2QQUSB19','SR1MGT01' | ForEach-Object {Get-ADComputer $PSItem} | Get-Uptime
+
+    ComputerName            LastBootTime       UpTime
+    ------------            ------------       ------
+    LX085MWJ.hq.first.int   11/8/2021 4:40 PM  0d:18h:23m:10s
+    WR2QQUSB19.hq.first.int 10/30/2021 5:48 PM 9d:17h:15m:27s
+    SR1MGT01.hq.first.int   11/6/2021 9:35 PM  2d:13h:28m:10s
 .INPUTS
     System.String[]
 .OUTPUTS
-    System.Collections.ArrayList
+    PSCustomObject
 .NOTES
     Author      Jacob C Allen
     Created     04/23/2019
-    Modified    04/23/2019
-    Version     1.1
+    Modified    11/09/2021
+    Version     1.3
 #>
 Function Get-Uptime {
     [CmdletBinding()]
+    [Alias('uptime')]
     Param (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()] 
-            [String[]]$ComputerName = $Env:COMPUTERNAME
+        [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0)]
+        [Alias('ComputerName','Name')]
+            [String[]]$DNSHostName = $env:COMPUTERNAME
     )
-    
-    Begin {
-        $Results = [System.Collections.ArrayList]::New()
-
-        Try {
-            $Null = Test-Connection -ComputerName $ComputerName -Count 1 -ErrorAction Stop
-        } Catch {
-            Write-Warning ('Unable to connect to [{0}]' -F $PSItem.CategoryInfo.TargetName) 
-            Write-Warning ('Please verify the name of the computer and try again')
-            
-            Break
-        }
-    } # Begin Block
-
     Process {
-        ForEach ($Computer in $ComputerName) {
+        #region Begin
+            $Results = [System.Collections.ArrayList]::New()
+
             Try {
-                $LastBoot = Get-CimInstance -ComputerName $Computer -ClassName Win32_OperatingSystem -ErrorAction Stop | Select-Object -ExpandProperty LastBootUpTime
+                $Null = Test-Connection -ComputerName $DNSHostName -Count 1 -ErrorAction Stop
             } Catch {
-                Write-Warning ('Retrieving LastBootUpTime for [{0}] failed' -F $Computer)
-                Write-Warning ('{0}' -F $PSItem.Exception.Message)
+                Write-Warning ('Unable to connect to [{0}]' -F $PSItem.CategoryInfo.TargetName) 
+                Write-Warning ('Please verify the name of the computer and try again')
                 Break
             }
-            
-            $UpTime = (Get-Date) - $LastBoot
+        #endregion Begin
 
-            [Void]$Results.Add(
-                [PSCustomObject][Ordered]@{
-                    ComputerName    = $Computer
-                    LastBootTime    = $LastBoot.ToString('g')
-                    UpTime          = ('{0:0}d:{1:0}h:{2:0}m:{3:0}s' -F $UpTime.Days,$Uptime.Hours,$UpTime.Minutes,$UpTime.Seconds)
+        #region Process
+            ForEach ($Computer in $DNSHostName) {
+                Write-Verbose $Computer
+                
+                Try {
+                    $LastBoot = Get-CimInstance -ComputerName $Computer -ClassName Win32_OperatingSystem -ErrorAction Stop | Select-Object -ExpandProperty LastBootUpTime
+                } Catch {
+                    Write-Warning ('Retrieving LastBootUpTime for [{0}] failed' -F $Computer)
+                    Write-Warning ('{0}' -F $PSItem.Exception.Message)
+                    Break
                 }
-            )
-        } # ForEach
+                
+                $UpTime = (Get-Date) - $LastBoot
+
+                [Void]$Results.Add(
+                    [PSCustomObject][Ordered]@{
+                        ComputerName    = $Computer
+                        LastBootUpTime  = $LastBoot
+                        ElapsedTime     = ('{0:0}d:{1:0}h:{2:0}m:{3:0}s' -F $UpTime.Days,$Uptime.Hours,$UpTime.Minutes,$UpTime.Seconds)
+                    }
+                )
+            } # ForEach
+        #endregion Process
+
+        #region End
+            $Results
+        #endregion End
     } # Process Block
-    
-    End {
-        $Results
-    } # End Block
 } # Function Get-Uptime
