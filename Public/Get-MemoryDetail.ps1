@@ -103,8 +103,9 @@ public static class PsApiWrapper
         Function Format-HumanReadable {
             [CmdletBinding()]
             Param (
-                $Size
-                )
+                [Parameter()]
+                [Int]$Size
+            )
             Switch ($Size) {
                 {$PSItem -ge 1PB}   { "{0:0#.#0 'PB'}" -f ($size / 1PB) ; Continue }
                 {$PSItem -ge 1TB}   { "{0:0#.#0 'TB'}" -f ($size / 1TB) ; Continue }
