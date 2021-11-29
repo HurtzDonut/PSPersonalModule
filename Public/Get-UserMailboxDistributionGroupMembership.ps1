@@ -1,5 +1,6 @@
-Function Get-MailboxGroupMembership {
+Function Get-UserMailboxDistributionGroupMembership {
     [CmdletBinding()]
+    [Alias('Get-MailboxGroupMembership','Get-UserDistrigutionGroupMember','Get-UserDGMembership')]
     Param(
         [Parameter(Mandatory)]
         [Alias('Email')]
@@ -16,4 +17,4 @@ Function Get-MailboxGroupMembership {
             }
         }
     }
-} # Function Get-MailboxGroupMembership
+} # Function Get-UserMailboxDistributionGroupMembership
