@@ -85,6 +85,8 @@
         By default you cannot create more than one KeepAlive Job, unless you provide a different JobName. There should be no reason to do this. With Query or EndJob, you can cleanup any old Jobs and then create a new one.
 #>
 Function Start-KeepAlive {
+    [CmdLetBinding()]
+    [Alias('ska')]
     Param (
     [Parameter()]    
         [Int]$KeepAliveHours = 1,
