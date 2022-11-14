@@ -13,4 +13,4 @@ ForEach ($File in ($PublicFiles + $PrivateFiles)) {
     }
 }
 
-Export-ModuleMember -Function $PublicFiles.BaseName
+Export-ModuleMember -Function $PublicFiles.BaseName -Alias *
