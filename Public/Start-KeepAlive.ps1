@@ -88,28 +88,28 @@ Function Start-KeepAlive {
     [CmdLetBinding()]
     [Alias('ska')]
     Param (
-    [Parameter()]    
-        [Int]$KeepAliveHours = 1,
-
-    [Parameter()]
+    [Parameter(Position = 0)]    
+        [Double]$KeepAliveHours = 1,
+    [Parameter(Position = 1)]    
+        [Double]$KeepAliveMinutes,
+    [Parameter(Position = 2)]
         [Int]$SleepSeconds = 300,
-
     [Parameter()]
         [String]$JobName = "KeepAlive",
-
     [Parameter()]
         [Switch]$EndJob,
-
     [Parameter()]
         [Switch]$Query,
-
-    [Parameter()]
-        [String]$KeyToPress = '^' # Default KeyPress is <Ctrl>
-        # Reference for other keys: http://msdn.microsoft.com/en-us/library/office/aa202943(v=office.10).aspx
+    [Parameter(HelpMessage = "Default KeyPress is <Ctrl>.`r`n`tReference for other keys: http://msdn.microsoft.com/en-us/library/office/aa202943(v=office.10).aspx")]
+        [String]$KeyToPress = '^'
     )
 
     Begin {
         $Endtime = (Get-Date).AddHours($KeepAliveHours)
+
+        If ($Null -ne $PSBoundParameters['KeepAliveMinutes']) {
+            $EndTime = $EndTime.AddMinutes($KeepAliveMinutes)
+        }
     } # Begin Block
 
     Process {
@@ -174,12 +174,13 @@ Function Start-KeepAlive {
                 Name         = $JobName
                 ArgumentList = $Endtime, $SleepSeconds, $JobName, $KeyToPress
             }
-            Start-Job @JobProperties
+            Start-Job @JobProperties | Out-Null
 
-            "`nKeepAlive set to run until $EndTime"
+            Write-Host ("{1}KeepAlive set to run until [{0}]{1}" -F $EndTime.ToShortTimeString(),[Environment]::NewLine) -ForegroundColor Cyan
         }  
     } # Process Block
 
-    End { 
+    End {
+        $EndTime
     } # End Block
 }#Start-KeepAlive
