@@ -4,7 +4,7 @@
 .DESCRIPTION
     Retreive the uptime of the specified computer(s) using the Win32_OperatingSystem Class.
 .EXAMPLE
-    PS C:\> Get-FFBUptime DNSHostName LX085MWJ,WR2QQUSB19,SR1MGT01
+    PS C:\> Get-CNHSAUptime DNSHostName LX085MWJ,WR2QQUSB19,SR1MGT01
 
     ComputerName            LastBootTime       UpTime
     ------------            ------------       ------
@@ -26,16 +26,18 @@
 .NOTES
     Author      Jacob C Allen
     Created     04/23/2019
-    Modified    11/09/2021
-    Version     1.3
+    Modified    05-31-2023
+    Version     1.4
 #>
-Function Get-Uptime {
+Function Get-CNHSAUptime {
     [CmdletBinding()]
     [Alias('uptime')]
     Param (
         [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0)]
         [Alias('ComputerName','Name')]
-            [String[]]$DNSHostName = $env:COMPUTERNAME
+            [String[]]$DNSHostName = $env:COMPUTERNAME,
+        [Parameter()]
+            [PSCredential]$Credential
     )
     Process {
         #region Begin
@@ -55,19 +57,29 @@ Function Get-Uptime {
                 Write-Verbose $Computer
                 
                 Try {
-                    $LastBoot = Get-CimInstance -ComputerName $Computer -ClassName Win32_OperatingSystem -ErrorAction Stop | Select-Object -ExpandProperty LastBootUpTime
+                    $getCimSplat = @{
+                        ComputerName    = $computer
+                        ClassName       = 'Win32_OperatingSystem'
+                        ErrorAction     = 'Stop'
+                    }
+                    $lastBoot = If ($null -ne $Credential) {
+                        Invoke-Command -ComputerName $Computer -ScriptBlock {Get-CimInstance @using:getCimSplat} -Credential $Credential
+                    } Else {
+                        Get-CimInstance @getCimSplat
+                    }
+                    
                 } Catch {
                     Write-Warning ('Retrieving LastBootUpTime for [{0}] failed' -F $Computer)
                     Write-Warning ('{0}' -F $PSItem.Exception.Message)
                     Break
                 }
                 
-                $UpTime = (Get-Date) - $LastBoot
+                $UpTime = (Get-Date) - $LastBoot.LastBootUpTime
 
                 [Void]$Results.Add(
                     [PSCustomObject][Ordered]@{
                         ComputerName    = $Computer
-                        LastBootUpTime  = $LastBoot
+                        LastBootUpTime  = $LastBoot.LastBootUpTime
                         ElapsedTime     = ('{0:0}d:{1:0}h:{2:0}m:{3:0}s' -F $UpTime.Days,$Uptime.Hours,$UpTime.Minutes,$UpTime.Seconds)
                     }
                 )
@@ -78,4 +90,4 @@ Function Get-Uptime {
             $Results
         #endregion End
     } # Process Block
-} # Function Get-Uptime
+} # Function Get-CNHSAUptime
