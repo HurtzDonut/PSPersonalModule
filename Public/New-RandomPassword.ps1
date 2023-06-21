@@ -34,9 +34,9 @@
         System.String
     .NOTES
         Auhtor :    Jacob C Allen (JCA)
-        Created:    1/18/2019
-        Modified:   3/17/2019
-        Version:    1.3
+        Created:    01-18-2019
+        Modified:   06-21-2023
+        Version:    1.4
 #>
 Function New-RandomPassword {
     [CmdLetBinding()]
@@ -47,22 +47,37 @@ Function New-RandomPassword {
 
         [Parameter(Position=1)]
         [ValidateRange(10,20)]
-            [Int]$PWLength = 11
+            [Int]$PWLength = 11,
+        [Parameter(Position=2)]
+            [Switch]$NoSpace
     )
     
     Begin {
         $PwList = [System.Collections.ArrayList]::New()
 
-        $NewPassChars = @(#  [SPACE] !
+        $NewPassChars = [System.Collections.ArrayList]::New()
+
+        If ($NoSpace.IsPresent) {
+            # !
+            [Void]$NewPassChars.Add([char[]]([char]33))
+        } Else {
             # [SPACE] !
-                [char[]]([char]32..[char]33) +
-            #  # $ % &
-                [char[]]([char]35..[char]38) +
-            #  ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _
-                [char[]]([char]40..[char]95) +
-            #  a b c d e f g h i j k l m n o p q r s t u v w x y z
-                ([char[]]([char]97..[char]122))
-        )
+            [char[]]([char]32..[char]33) |
+                ForEach-Object {
+                    [Void]$NewPassChars.Add($PSItem)
+                }
+        }
+
+        #  35..38
+        #       # $ % &
+        #  40..95
+        #       ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _
+        # 97..122
+        #       a b c d e f g h i j k l m n o p q r s t u v w x y z
+        [char[]]([char]35..[char]38), [char[]]([char]40..[char]95), [char[]]([char]97..[char]122) |
+            ForEach-Object {
+                [Void]$NewPassChars.AddRange($PSItem)
+            }
     } # Begin Block
     
     Process {
