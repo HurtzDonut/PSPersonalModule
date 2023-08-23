@@ -1,5 +1,6 @@
 Function Get-PSDefaultParamValue {
     [CmdletBinding(DefaultParameterSetName='Type')]
+    [Alias('gdfpv')]
     Param ( 
         [Parameter(ParameterSetName='Type')]
         [ValidateSet('Alias','Cmdlet','Function','All')]
