@@ -28,9 +28,9 @@
 .NOTES
     Author			Jacob C Allen
     Created			05-23-2024
-    Modified		-
-    Modified By		-
-    Version			v1.0
+    Modified		06-04-2024
+    Modified By		Jacob C Allen
+    Version			v1.1
 #>
 Function Get-BrowserLatestVersion {
     [CmdLetBinding(DefaultParameterSetName='All')]
@@ -92,8 +92,29 @@ Function Get-BrowserLatestVersion {
                 If ($Chrome.IsPresent) {
                     [Void]$hash.Add('Chrome',$chromeSC.InvokeReturnAsIs())
                 }
-
-                [Void]$results.Add([PSCustomObject]$hash)
+                
+                If ($hash.Count -eq 1) {
+                    [PSCustomObject]$hash
+                } ElseIf ($hash.Count -eq 2) {
+                    $sorted = $hash.Keys | Sort-Object -Descending
+                
+                    [Void]$results.Add((
+                        [PSCustomObject][Ordered]@{
+                            $sorted[0] = $hash[$sorted[0]]
+                            $sorted[1] = $hash[$sorted[1]]
+                        }
+                    ))
+                } ElseIf ($hash.Count -eq 3) {
+                    $sorted = $hash.Keys | Sort-Object -Descending
+                
+                    [Void]$results.Add((
+                        [PSCustomObject][Ordered]@{
+                            $sorted[0] = $hash[$sorted[0]]
+                            $sorted[1] = $hash[$sorted[1]]
+                            $sorted[2] = $hash[$sorted[2]]
+                        }
+                    ))
+                }
             }
         }
     } # Process
