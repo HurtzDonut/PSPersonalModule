@@ -10,15 +10,17 @@
 .NOTES
     Author			Jacob C Allen
     Created			05-15-2024
-    Modified		-
-    Modified By		-
-    Version			v1.0
+    Modified		08-08-2024
+    Modified By		Jacob C Allen
+    Version			v1.0.1
 #>
 Function Clear-ConsoleLogFiles {
     [CmdLetBinding()]
-    Param ()
+    Param (
+        [Parameter()]
+            [String]$LogDir = ('{0}\My Documents\PowerShell\Console_Logs' -F $env:HOMESHARE)
+    )
     Begin {
-        $LogDir         = '{0}\My Documents\PowerShell\Console_Logs' -F $env:HOMESHARE
         $Date           = Get-Date
         $PrevMonArchive = '{0}\Archive\{1}' -F $LogDir,$Date.AddMonths(-1).ToString('MMM_yyy')        
     } # Begin
