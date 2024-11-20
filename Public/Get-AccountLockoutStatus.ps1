@@ -12,47 +12,39 @@
 .NOTES  
     Name: Get-AccountLockoutStatus
     Author: The Sysadmin Channel
-    Version: 1.01
+    Version: 1.2
     DateCreated: 2017-Apr-09
-    DateUpdated: 2017-Apr-09
-    
+    DateUpdated: 11-20-2024 
 .LINK
     https://thesysadminchannel.com/get-account-lock-out-source-powershell -
-    
-    
-.PARAMETER ComputerName
+.PARAMETER DomainController
     By default all domain controllers are checked. If a computername is specified, it will check only that.
-    
-    .PARAMETER Username
+.PARAMETER Username
     If a username is specified, it will only output events for that username.
-    
-    .PARAMETER DaysFromToday
+.PARAMETER DaysFromToday
     This will set the number of days to check in the event logs.  Default is 3 days.
-    
-    .EXAMPLE
+.PARAMETER Credential
+    Use if an alternate credential is needed to connect to the DC(s)
+.EXAMPLE
     Get-AccountLockoutStatus
-    
+
     Description:
-    Will generate a list of lockout events on all domain controllers.
-    
-    .EXAMPLE
-    Get-AccountLockoutStatus -ComputerName DC01, DC02
-    
+        Will generate a list of lockout events on all domain controllers.
+.EXAMPLE
+    Get-AccountLockoutStatus DomainController DC01, DC02 -Credential $Credential
+
     Description:
-    Will generate a list of lockout events on DC01 and DC02.
-    
-    .EXAMPLE
+        Will generate a list of lockout events on DC01 and DC02 using the alternate credential, $Credential
+.EXAMPLE
     Get-AccountLockoutStatus -Username Username
-    
+
     Description:
-    Will generate a list of lockout events on all domain controllers and filter that specific user.
-    
-    .EXAMPLE
+        Will generate a list of lockout events on all domain controllers and filter that specific user.
+.EXAMPLE
     Get-AccountLockoutStatus -DaysFromToday 2
-    
+
     Description:
-    Will generate a list of lockout events on all domain controllers going back only 2 days.
-    
+        Will generate a list of lockout events on all domain controllers going back only 2 days.
 #> 
 
 Function Get-AccountLockoutStatus {
@@ -62,14 +54,14 @@ Function Get-AccountLockoutStatus {
         [Parameter()]
         [ValidateNotNullOrEmpty()]
             [String[]]$DomainController = (Get-ADDomainController -Filter *).Name,
-    
         [Parameter()]
         [ValidateNotNullOrEmpty()]
             [String]$Username,
-    
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-            [Int]$DaysFromToday = 3    
+            [Int]$DaysFromToday = 3,
+        [Parameter()]
+            [PSCredential]$Credential
     )
     
     Process {
@@ -81,7 +73,10 @@ Function Get-AccountLockoutStatus {
                     FilterHashtable = @{LogName='Security';ID=4740;StartTime=(Get-Date).AddDays(-$DaysFromToday)}
                     ErrorAction     = 'Stop'
                 }
-                $Event = Get-WinEvent @WinEventSplat | ForEach-Object {
+                If ($null -ne $Credential) {
+                    $WinEventSplat.Add('Credential',$Credential)
+                }
+                $winEvent = Get-WinEvent @WinEventSplat | ForEach-Object {
                     [PSCustomObject][Ordered]@{
                         ComputerName    = $Computer
                         Time            = $PSItem.TimeCreated
@@ -91,7 +86,7 @@ Function Get-AccountLockoutStatus {
                 }
 
                 If ($UserName) {
-                    $Event | Where-Object UserName -eq $Username
+                    $winEvent | Where-Object UserName -eq $Username
                 }
             } Catch {
                 Write-Error $PSItem.Exception.Message
