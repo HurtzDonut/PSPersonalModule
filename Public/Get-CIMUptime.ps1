@@ -4,7 +4,7 @@
 .DESCRIPTION
     Retreive the uptime of the specified computer(s) using the Win32_OperatingSystem Class.
 .EXAMPLE
-    PS C:\> Get-CNHSAUptime DNSHostName LX085MWJ,WR2QQUSB19,SR1MGT01
+    PS C:\> Get-CIMUptime DNSHostName LX085MWJ,WR2QQUSB19,SR1MGT01
 
     ComputerName            LastBootTime       UpTime
     ------------            ------------       ------
@@ -29,9 +29,9 @@
     Modified    05-31-2023
     Version     1.4
 #>
-Function Get-CNHSAUptime {
+Function Get-CIMUptime {
     [CmdletBinding()]
-    [Alias('uptime')]
+    [Alias('uptime','Get-Uptime')]
     Param (
         [Parameter(ValueFromPipelineByPropertyName, ValueFromPipeline, Position = 0)]
         [Alias('ComputerName','Name')]
@@ -90,4 +90,4 @@ Function Get-CNHSAUptime {
             $Results
         #endregion End
     } # Process Block
-} # Function Get-CNHSAUptime
+} # Function Get-CIMUptime
