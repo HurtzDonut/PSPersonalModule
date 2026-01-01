@@ -4,8 +4,9 @@ $PrivatePath    = Join-Path -Path $PSScriptRoot -ChildPath Private
 $PublicFiles    = Get-ChildItem -Path $PublicPath -Include *.ps1 -Recurse
 $PrivateFiles   = Get-ChildItem -Path $PrivatePath -Include *.ps1 -Recurse
 
+$Script:ClassDir=Join-Path -Path $PSScriptRoot -ChildPath Classs
 
-ForEach ($File in ($PublicFiles + $PrivateFiles)) {
+ForEach ($File in ($PublicFiles, $PrivateFiles)) {
     Try {
         Import-Module -Name $File.FullName -ErrorAction Stop
     } Catch {

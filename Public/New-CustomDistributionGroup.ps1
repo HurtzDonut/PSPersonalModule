@@ -4,7 +4,6 @@ Function New-CustomDistributionGroup {
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
             [String]$Name,
-        
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
@@ -21,29 +20,25 @@ Function New-CustomDistributionGroup {
             }
         })]
             [String]$Alias = $Name.Replace(' ',$Null),
-
         [Parameter()]
         [ValidateSet('Open', 'Closed')]
             [String]$MemberJoinRestriction = 'Closed',
-
         [Parameter()]
         [ValidateSet('Open', 'Closed')]
             [String]$MemberDepartRestriction = 'Open',
-
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
             [String]$Description,
-
         [Parameter()]
         [ValidateNotNullOrEmpty()]
             [String[]]$Members,
-
         [Parameter()]
         [ValidateNotNullOrEmpty()]
             [String]$ManagedBy,
-
         [Parameter()]
-            [Switch]$AllowExternalMail
+            [Switch]$AllowExternalMail,
+        [Parameter()]
+            [String]$Notes
     )
 
     Process {
@@ -54,7 +49,8 @@ Function New-CustomDistributionGroup {
             MemberJoinRestriction   = $MemberJoinRestriction
             MemberDepartRestriction = $MemberDepartRestriction
             OrganizationalUnit      = "OU=Distribution Lists,OU=Mail,OU=Departments,DC=hq,DC=first,DC=int"
-            Notes                   = $ServiceNowTicket
+            ManagedBy               = $ManagedBy
+            Notes                   = $Notes
             ErrorAction             = 'Stop'
         }
 
